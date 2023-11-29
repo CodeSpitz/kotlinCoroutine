@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.20"
+    kotlin("jvm") version "1.9.21"
     application
 }
 
@@ -16,6 +16,7 @@ configure<JavaPluginExtension> {
     targetCompatibility = JavaVersion.VERSION_21
 }
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     testImplementation(kotlin("test"))
 }
 tasks.withType<KotlinCompile> {

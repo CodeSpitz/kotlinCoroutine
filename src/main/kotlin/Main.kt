@@ -1,18 +1,34 @@
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.startCoroutine
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.*
+
+private class Cont(override val context:CoroutineContext):Continuation<Unit> {
+    override fun resumeWith(result:Result<Unit>) {}
+}
+fun launch(ctx: CoroutineContext = EmptyCoroutineContext, block:suspend ()->Unit):Unit
+= block.startCoroutine(Cont(ctx))
+
+suspend fun test(a:Int):Int{
+    delay(1000)
+    return suspendCoroutine{
+        it.resumeWith(Result.success(a * 2))
+    }
+}
 
 fun main(args: Array<String>) {
-    println("Hello World!")
-
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+    val start = System.currentTimeMillis()
+    println("start $start")
+    launch{
+        println("${test(30)}")
+        println("end ${System.currentTimeMillis() - start}")
+    }
+    val job = GlobalScope.launch {
+        println("${test(20)}")
+        println("end ${System.currentTimeMillis() - start}")
+    }
+    Thread.sleep(2000)
 }
 
-private class Cont(override val context: CoroutineContext): Continuation<Unit> {
-    override fun resumeWith(result: Result<Unit>){}
 
-}
-fun eLaunch(ctx:CoroutineContext = EmptyCoroutineContext, block:suspend ()->Unit) = block.startCoroutine(Cont(ctx))
